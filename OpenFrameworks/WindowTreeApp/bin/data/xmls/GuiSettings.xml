@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<group>
+	<Color>0.674254, 0.00460827, 1, 1</Color>
+	<TransitionTime>0.5</TransitionTime>
+	<Size>9.412</Size>
+	<Grid>1</Grid>
+	<VideoPath>/home/morilondon/Desktop/MASTER_PLAYLIST/TESTS</VideoPath>
+	<Contrast>1</Contrast>
+	<Saturation>1</Saturation>
+	<Brightness>1</Brightness>
+	<Gamma>1</Gamma>
+	<MinInput>0</MinInput>
+	<MaxInput>1</MaxInput>
+	<MinOutput>0</MinOutput>
+	<MaxOutput>1</MaxOutput>
+	<Speed>1.941</Speed>
+	<Parameter>0.441</Parameter>
+	<ColorAmount>0</ColorAmount>
+	<Direction>1</Direction>
+</group>
