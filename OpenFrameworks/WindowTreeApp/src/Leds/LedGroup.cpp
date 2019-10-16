@@ -11,7 +11,7 @@
 #include "LedGroup.h"
 #include "AppManager.h"
 
-LedGroup::LedGroup(string& name): m_name(name), m_sizeScale(1.0), m_offset(2.5)
+LedGroup::LedGroup(string& name, unsigned char channel): m_name(name), m_sizeScale(1.0), m_offset(2.5), m_channel(channel)
 {
     //Intentionaly left empty
 }
@@ -535,43 +535,6 @@ void LedGroup::centre2DLeds(float margin_percentage)
 //    ofLogNotice() <<"LedGroup::centreLeds -> max position: x = "  << maxPos.x << ", y = "  << maxPos.y;
 }
 
-
-
-
-
-GoetheGroup::GoetheGroup(string& name): LedGroup(name)
-{
-    //Intentionaly left empty
-}
-
-GoetheGroup::~GoetheGroup()
-{
-    //Intentionaly left empty
-}
-
-void GoetheGroup::setPixelColor(ofPixelsRef pixels, int index)
-{
-    if(index<0 || index>=m_points2D.size()){
-        return;
-    }
-    
-    if(!m_boundingBox.inside(m_points2D[index])){
-        m_colors[index] = ofColor::black;
-        return;
-    }
-    
-    
-    int x = (int) ofMap(m_points2D[index].x, m_boundingBox.getMinX(), m_boundingBox.getMaxX(), 0, pixels.getWidth()-1, true);
-    int y = (int) ofMap(m_points2D[index].y, m_boundingBox.getMinY(), m_boundingBox.getMaxY(), 0, pixels.getHeight()-1, true);
-    
-    auto color = pixels.getColor(x, y);
-    color.setSaturation(0.0f);
-    
-//    auto color = ofColor::white;
-//    color.setBrightness(pixels.getColor(x, y).getBrightness());
-    
-    m_colors[index] = color;
-}
 
 
 

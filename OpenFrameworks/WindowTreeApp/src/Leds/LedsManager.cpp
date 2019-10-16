@@ -125,7 +125,7 @@ bool LedsManager::readLeds()
     {
         string name =  dir.getName(i);
         ofLogNotice() <<"LedsManager::readLeds-> sub-directory name: " << name;
-        auto ledGroup = shared_ptr<LedGroup>(new LedGroup(name));
+        auto ledGroup = shared_ptr<LedGroup>(new LedGroup(name, i));
         if(ledGroup->setup()){
             m_ledGroups[name] = ledGroup;
         }

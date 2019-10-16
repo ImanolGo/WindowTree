@@ -60,6 +60,7 @@ class LedsManager: public Manager
     
         bool get2dPosition(int index, ofPoint& position);
     
+        const map<string, shared_ptr<LedGroup>> & getLedGroups() const {return m_ledGroups;}
     
     private:
     
@@ -91,7 +92,7 @@ class LedsManager: public Manager
     private:
     
         
-        ofRectangle         m_boundingBox;
+        ofRectangle        m_boundingBox;
         bool               m_isNewFrame;
         bool               m_is3D;
         bool               m_drawGrid;

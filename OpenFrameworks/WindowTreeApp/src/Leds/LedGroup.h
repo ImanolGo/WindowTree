@@ -15,7 +15,7 @@ class LedGroup{
     
     public:
     
-        LedGroup(string& name);
+        LedGroup(string& name, unsigned char channel);
     
         virtual ~LedGroup();
     
@@ -42,6 +42,8 @@ class LedGroup{
         void setPixels(ofPixelsRef pixels);
     
         const vector <ofFloatColor>& getColors() const {return m_colors;}
+    
+        unsigned char getChannel() const {return m_channel;}
     
     protected:
     
@@ -99,24 +101,10 @@ class LedGroup{
         vector <ofFloatColor> m_colorsBlack;
     
         string  m_name;
+        unsigned char    m_channel;
 
 };
 
-
-class GoetheGroup: public LedGroup
-{
-    public:
-    
-        GoetheGroup(string& name);
-    
-        virtual ~GoetheGroup();
-    
-    protected:
-    
-        virtual void setPixelColor(ofPixelsRef pixels, int index);
-    
-    
-};
 
 
 

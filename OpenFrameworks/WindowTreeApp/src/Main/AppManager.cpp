@@ -97,6 +97,7 @@ void AppManager::setupManagers()
     m_visualEffectsManager.setup();
     m_layoutManager.setup();
     m_videoManager.setup();
+    m_udpManager.setup();
     m_ledsManager.setup();
     m_modelManager.setup();
     m_keyboardManager.setup();
@@ -120,6 +121,7 @@ void AppManager::update()
     m_ledsManager.update();
     m_modelManager.update();
     m_layoutManager.update();
+    m_udpManager.update();
     m_guiManager.update();
 }
 
