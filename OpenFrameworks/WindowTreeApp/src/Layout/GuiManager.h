@@ -135,6 +135,7 @@ private:
     
     ofParameter<ofFloatColor>  m_solidColor;
     ofParameter<int>         m_colorTemperature;
+    ofParameter<bool>        m_useHueCorrection;
     
     std::vector<std::string>    m_sceneNames;
     

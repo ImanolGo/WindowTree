@@ -52,7 +52,8 @@ void ColorScene::updateRectangle()
 {
     auto floatColor = AppManager::getInstance().getGuiManager().getSolidColor();
     //auto color = ofColor(floatColor.b*255, floatColor.g*255, floatColor.b*255 );
-    m_rectangle.setColor(floatColor);
+   // m_rectangle.setColor(floatColor);
+    m_rectangle.setColor(ofColor::white);
     
 }
 

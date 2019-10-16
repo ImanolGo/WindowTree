@@ -101,6 +101,10 @@ void GuiManager::setupScenesGui()
     m_colorTemperature.set( "ColorTemperature (K)", 1500, 1500, 15000 );
     m_colorTemperature.addListener(this, &GuiManager::setColorTemperature);
     
+    m_useHueCorrection.set("HueCorrection", true);
+    m_useHueCorrection.addListener(scenesManager, &SceneManager::setUseHueCorrection);
+    m_parameters.add(m_useHueCorrection);
+    
     m_sceneTransitionTime.set("TransitionTime", 0.5, 0.0, 10);
     m_sceneTransitionTime.addListener(scenesManager, &SceneManager::onTransitionTimeChange);
     m_parameters.add(m_sceneTransitionTime);
@@ -277,6 +281,7 @@ void GuiManager::drawGui()
                 ofxImGui::AddParameter(m_sceneTransitionTime);
                 ofxImGui::AddParameter(m_solidColor);
                 ofxImGui::AddParameter(m_colorTemperature);
+                ofxImGui::AddParameter(m_useHueCorrection);
                 ofxImGui::AddCombo(m_sceneMode, m_sceneNames);
                 ofxImGui::EndTree(mainSettings);
             }

@@ -109,7 +109,7 @@ void ShaderScene::drawShader()
     float colorAmount = AppManager::getInstance().getGuiManager().getColorAmount();
     
     m_shader.begin();
-    m_shader.setUniform4f("iColor", floatColor);
+    //m_shader.setUniform4f("iColor", floatColor);
     m_shader.setUniform1f("iGlobalTime", m_elapsedTime);
     m_shader.setUniform3f("iResolution", width, height,0.0);
     m_shader.setUniform1f("parameter", parameter);

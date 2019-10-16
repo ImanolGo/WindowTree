@@ -13,7 +13,7 @@
 #include "scenes.h"
 #include "AppManager.h"
 
-SceneManager::SceneManager(): Manager(), m_alpha(-1), m_transitionTime(0.5), m_sceneOffset(2), m_currentVideoIndex(0), m_status(false), m_servoColor(ofColor::white)
+SceneManager::SceneManager(): Manager(), m_alpha(-1), m_transitionTime(0.5), m_sceneOffset(2), m_currentVideoIndex(0), m_status(false), m_useHueCorrection(false)
 {
 	//Intentionally left empty
 }
@@ -35,9 +35,8 @@ void SceneManager::setup()
     this->createScenes();
     this->setupFbo();
     this->setupLevels();
+    this->setupShader();
    // this->setupTimer();
-    
-    m_servoColor.a = 0;
 
     ofLogNotice() <<"SceneManager::initialized";
 
@@ -75,35 +74,35 @@ void SceneManager::createScenes()
     m_sceneOffset++;
     
     
-    //Create shader Scene
-    auto shaderScene = ofPtr<ShaderScene> (new ShaderScene("NoiseShader"));
-    shaderScene->setup();
-    m_mySceneManager->addScene(shaderScene);
-    m_sceneOffset++;
-    
-    //Create shader Scene
-    shaderScene = ofPtr<ShaderScene> (new ShaderScene("CirclesShader"));
-    shaderScene->setup();
-    m_mySceneManager->addScene(shaderScene);
-    m_sceneOffset++;
-    
-    //Create shader Scene
-    shaderScene = ofPtr<ShaderScene> (new ShaderScene("SparklesShader"));
-    shaderScene->setup();
-    m_mySceneManager->addScene(shaderScene);
-    m_sceneOffset++;
-    
-    //Create shader Scene
-    shaderScene = ofPtr<ShaderScene> (new ShaderScene("BreathShader"));
-    shaderScene->setup();
-    m_mySceneManager->addScene(shaderScene);
-    m_sceneOffset++;
-    
-    //Create shader Scene
-    shaderScene = ofPtr<ShaderScene> (new ShaderScene("CloudsShader"));
-    shaderScene->setup();
-    m_mySceneManager->addScene(shaderScene);
-    m_sceneOffset++;
+//    //Create shader Scene
+//    auto shaderScene = ofPtr<ShaderScene> (new ShaderScene("NoiseShader"));
+//    shaderScene->setup();
+//    m_mySceneManager->addScene(shaderScene);
+//    m_sceneOffset++;
+//
+//    //Create shader Scene
+//    shaderScene = ofPtr<ShaderScene> (new ShaderScene("CirclesShader"));
+//    shaderScene->setup();
+//    m_mySceneManager->addScene(shaderScene);
+//    m_sceneOffset++;
+//
+//    //Create shader Scene
+//    shaderScene = ofPtr<ShaderScene> (new ShaderScene("SparklesShader"));
+//    shaderScene->setup();
+//    m_mySceneManager->addScene(shaderScene);
+//    m_sceneOffset++;
+//
+//    //Create shader Scene
+//    shaderScene = ofPtr<ShaderScene> (new ShaderScene("BreathShader"));
+//    shaderScene->setup();
+//    m_mySceneManager->addScene(shaderScene);
+//    m_sceneOffset++;
+//
+//    //Create shader Scene
+//    shaderScene = ofPtr<ShaderScene> (new ShaderScene("CloudsShader"));
+//    shaderScene->setup();
+//    m_mySceneManager->addScene(shaderScene);
+//    m_sceneOffset++;
 
 
     
@@ -128,6 +127,11 @@ void SceneManager::setupFbo()
 
     m_fbo.allocate(width, height, GL_RGBA);
     m_fbo.begin(); ofClear(0); m_fbo.end();
+    
+    m_fboColor.allocate(width, height, GL_RGBA);
+    m_fboColor.begin(); ofClear(0); m_fboColor.end();
+    
+    
 }
 
 void SceneManager::setupLevels()
@@ -137,6 +141,21 @@ void SceneManager::setupLevels()
     
     m_levels.setup(width,height);
 }
+
+void SceneManager::setupShader()
+{
+    string path = "shaders/ColorHueShader";
+    
+    m_hueShader.unload();
+    if(m_hueShader.load(path))
+    {
+        ofLogNotice() << "SceneManager::setupShader-> successfully loaded " << path;
+    }
+    else{
+        ofLogNotice() << + "SceneManager::setupShader-> Cannot load " << path;
+    }
+}
+
 
 void SceneManager::setupTimer()
 {
@@ -172,14 +191,35 @@ void SceneManager::updateFbo()
          ofDisableAlphaBlending();
     m_levels.end();
     
-    m_fbo.begin();
-        ofClear(255,0,0);
+    m_fboColor.begin();
+    ofClear(0,0,0);
        ofPushStyle();
         ofSetColor(255);
         ofEnableAlphaBlending();
             m_levels.draw();
         ofDisableAlphaBlending();
 		ofPopStyle();
+    m_fboColor.end();
+    
+    m_fbo.begin();
+    ofClear(0,0,0);
+    ofPushStyle();
+    ofSetColor(255);
+    ofEnableAlphaBlending();
+    if(m_useHueCorrection){
+        auto floatColor = AppManager::getInstance().getGuiManager().getSolidColor();
+        m_hueShader.begin();
+        m_hueShader.setUniform4f("color", floatColor);
+        
+    }
+    
+        m_fboColor.draw(0,0);
+    
+    if(m_useHueCorrection){
+        m_hueShader.end();
+    }
+    ofDisableAlphaBlending();
+    ofPopStyle();
     m_fbo.end();
 }
 
@@ -387,21 +427,6 @@ void SceneManager::sendSceneChange()
 }
 
 
-void SceneManager::setServoPosition(float & value)
-{
-    float brightness =  ofMap(value, 0.0, 1.0, 0.0, 255.0);
-    m_servoColor.setBrightness(brightness);
-}
-
-void SceneManager::setManualServo(bool & value)
-{
-    if(value){
-        m_servoColor.a = 255;
-    }
-    else{
-        m_servoColor.a = 0;
-    }
-}
 
 
 int SceneManager::getNumberScenes(){

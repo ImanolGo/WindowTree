@@ -98,9 +98,7 @@ public:
     
     bool getCurrentStatus() const {return m_status;}
     
-    void setServoPosition(float & value);
-    
-    void setManualServo(bool & value);
+    void setUseHueCorrection(bool & value){m_useHueCorrection = value;}
     
 private:
     
@@ -111,6 +109,8 @@ private:
     void setupFbo();
     
     void setupLevels();
+    
+    void setupShader();
     
     //! Set up the scene timer
     void setupTimer();
@@ -136,12 +136,13 @@ private:
 private:
 
     shared_ptr<ofxSceneManager>          m_mySceneManager;
-    ofFbo                    m_fbo;
+    ofFbo                    m_fbo, m_fboColor;
     ofxSimpleTimer           m_sceneTimer;
     float                    m_alpha;
     ofxFastFboReader         m_reader;
     ofxPSLevels              m_levels;
     ofParameterGroup         m_parameters;
+    ofShader                 m_hueShader;
     
     vector<string>           m_sceneList;
     string                   m_currentSceneName;
@@ -149,7 +150,7 @@ private:
     int                      m_sceneOffset;
     bool                     m_status;
     int                      m_currentVideoIndex;
-    ofColor                  m_servoColor;
+    bool                     m_useHueCorrection;
 };
 
 //==========================================================================
