@@ -80,6 +80,8 @@ public:
 
     void setSceneTransitionTime(float value) {m_sceneTransitionTime = value;}
     
+    void setColorTemperature(int & value);
+    
 private:
     
     void setupGuiParameters();
@@ -99,6 +101,8 @@ private:
     void setupProcessingGroup();
     
     void updateSize(const ofxImGui::Settings& settings);
+    
+    ofColor colorTemperatureToRGB(float kelvin);
     
 private:
     
@@ -130,6 +134,7 @@ private:
     
     
     ofParameter<ofFloatColor>  m_solidColor;
+    ofParameter<int>         m_colorTemperature;
     
     std::vector<std::string>    m_sceneNames;
     

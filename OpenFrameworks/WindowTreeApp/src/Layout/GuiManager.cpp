@@ -98,6 +98,9 @@ void GuiManager::setupScenesGui()
     m_solidColor.set( "Color", ofFloatColor::white );
     m_parameters.add(m_solidColor);
     
+    m_colorTemperature.set( "ColorTemperature (K)", 1500, 1500, 15000 );
+    m_colorTemperature.addListener(this, &GuiManager::setColorTemperature);
+    
     m_sceneTransitionTime.set("TransitionTime", 0.5, 0.0, 10);
     m_sceneTransitionTime.addListener(scenesManager, &SceneManager::onTransitionTimeChange);
     m_parameters.add(m_sceneTransitionTime);
@@ -273,6 +276,7 @@ void GuiManager::drawGui()
             {
                 ofxImGui::AddParameter(m_sceneTransitionTime);
                 ofxImGui::AddParameter(m_solidColor);
+                ofxImGui::AddParameter(m_colorTemperature);
                 ofxImGui::AddCombo(m_sceneMode, m_sceneNames);
                 ofxImGui::EndTree(mainSettings);
             }
@@ -402,6 +406,58 @@ void GuiManager::drawRectangle()
     ofDrawRectangle( 0, 0, this->getWidth(), ofGetHeight());
     ofPopStyle();
 }
+void GuiManager::setColorTemperature(int & value)
+{
+    m_solidColor = this->colorTemperatureToRGB(value);
+    
+}
+
+ofColor GuiManager::colorTemperatureToRGB(float kelvin)
+{
+    float temp = kelvin / 100;
+    float red, green, blue;
+    
+    if( temp <= 66 ){
+        
+        red = 255;
+        
+        green = temp;
+        green = 99.4708025861 * log(green) - 161.1195681661;
+        
+        
+        if( temp <= 19){
+            
+            blue = 0;
+            
+        } else {
+            
+            blue = temp-10;
+            blue = 138.5177312231 * log(blue) - 305.0447927307;
+            
+        }
+        
+    } else {
+        
+        red = temp - 60;
+        red = 329.698727446 * pow(red, -0.1332047592);
+        
+        green = temp - 60;
+        green = 288.1221695283 * pow(green, -0.0755148492 );
+        
+        blue = 255;
+        
+    }
+    
+    ofColor color;
+    color.r = ofClamp(red, 0, 255);
+    color.g = ofClamp(green, 0, 255);
+    color.b = ofClamp(blue, 0, 255);
+    
+    return color;
+}
+
+
+
 
 
 

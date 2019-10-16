@@ -72,7 +72,7 @@ void UdpManager::setupUdpConnection()
     m_udpConnection.SetNonBlocking(true);
     
     
-    string ip = AppManager::getInstance().getSettingsManager().getIpAddress();
+    //string ip = AppManager::getInstance().getSettingsManager().getIpAddress();
     int portSend = AppManager::getInstance().getSettingsManager().getUdpPortSend();
     
     m_udpConnection.Connect(m_broadcast.c_str(),portSend);
@@ -120,9 +120,8 @@ void UdpManager::setupIP()
         m_ip = siteLocalInterfaces[0].address().toString();
     }
     
-    m_ip = AppManager::getInstance().getSettingsManager().getIpAddress();
+    //m_ip = AppManager::getInstance().getSettingsManager().getIpAddress();
     ofLogNotice() <<"UdpManager::setupIP -> IP address: " << m_ip;
-    // m_ip = "100.100.100.190";
     
     m_broadcast = "";
     auto stringSplit = ofSplitString(m_ip, ".");
