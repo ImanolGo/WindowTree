@@ -4,22 +4,14 @@
 //
 // This code is under A Creative Commons Attribution/Share-Alike License
 // http://creativecommons.org/licenses/by-sa/4.0/
-// 2018, Imanol Gomez
+// 2019, Imanol Gomez
 ///////////////////////////////////////////////////////////////////
 
 #pragma once
 #include "Arduino.h"
+#include "Config.h"
 #include "FastLED.h"
 #include "WiFiManager.h"
-
-#define LED_TYPE    WS2812B
-#define COLOR_ORDER GRB
-#define DATA_PIN    32
-//#define DATA_PIN    5
-#define NUM_LEDS 144
-#define MAX_BRIGHTNESS 100
-#define TEST_DELAY 500
-#define OUTPUT_CHANNEL 0
 
 const byte channelwidth = 3; //3 channels per pixel
 
@@ -33,13 +25,14 @@ class LedsManager{
     void setup();
     void update();
 
-    void parseRGBReceived(unsigned char* pbuff, int count);
+    void parseRGBReceived(unsigned char* pbuff, int packetSize);
     void setAllColor(CRGB color);
     
   private:
 
     void setupLeds();
     void initTest();
+    void checkFps();
 
     //int data_pins[NUM_CHANNELS];
     //int clock_pins[NUM_CHANNELS];
@@ -63,7 +56,7 @@ void LedsManager::setup()
 void LedsManager::setupLeds()
 {
 
-    FastLED.addLeds<LED_TYPE,DATA_PIN,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(UncorrectedColor);
+   FastLED.addLeds<LED_TYPE,DATA_PIN_,COLOR_ORDER>(leds, NUM_LEDS).setCorrection(UncorrectedColor);
  
    FastLED.setMaxPowerInVoltsAndMilliamps (5, 2100);
    FastLED.setDither( 0 );
@@ -72,42 +65,63 @@ void LedsManager::setupLeds()
    Serial.println("LedsManager::setupLeds");
 }
 
+
 void LedsManager::update()
 {
-    
+    this->checkFps();
 }
 
-void LedsManager::parseRGBReceived(unsigned char* pbuff, int count) 
+void LedsManager::parseRGBReceived(unsigned char* pbuff, int packetSize) 
 {
-  //DEBUG_PRINT_LN ("DMX Packet Received");
-  int output_channel = pbuff[6];
-  int numLeds = count/channelwidth;
+    if(packetSize<HEADER_SIZE+DATA_HEADER_SIZE)
+        return;
 
-//  Serial.print("LedsManager::parseRGBReceived -> outputChannel: ");
-//  Serial.println(output_channel);
+     unsigned short index = HEADER_SIZE;
+     unsigned short channel = ByteToShort(pbuff[index++], pbuff[index++]);
+     unsigned short offset = ByteToShort(pbuff[index++], pbuff[index++]);
+     unsigned short num_pixels = ByteToShort(pbuff[index++], pbuff[index++]);
+
+//     Serial.print("LedsManager::parseRGBReceived -> channel: ");
+//     Serial.println(channel);
 //
-//  Serial.print("LedsManager::parseRGBReceived -> numLeds: ");
-//  Serial.println(numLeds);
+//     Serial.print("LedsManager::parseRGBReceived -> offset: ");
+//     Serial.println(offset);
+//
+//     Serial.print("LedsManager::parseRGBReceived -> num pixels: ");
+//     Serial.println(num_pixels);
 
-   if(output_channel != OUTPUT_CHANNEL){
-    return;
-  }
-  
-  if(numLeds > NUM_LEDS){
-     numLeds = NUM_LEDS;
-  }
+     int data_bytes = CHANNEL_WIDTH*num_pixels;
 
- 
-    int channel = 0; //reset RGB channel assignment to 0 each time through loop.
-    for (int i = 0; i < numLeds; i++) //loop to assign 3 channels to each pixel
+    if(packetSize == HEADER_SIZE+DATA_HEADER_SIZE + data_bytes)
     {
-        leds[i] = CRGB(pbuff[HEADER_SIZE + channel], pbuff[HEADER_SIZE + (channel +1)], pbuff[HEADER_SIZE + (channel +2)]);
-        channel +=channelwidth; //increase last channel number by channel width
+        int start_index = offset;
+        if(start_index>=NUM_LEDS){
+          return;
+        }
+        int end_index = start_index + num_pixels;
+        if(end_index > NUM_LEDS){
+           end_index = NUM_LEDS;
+        }
+  
+        int channel = HEADER_SIZE+DATA_HEADER_SIZE; 
+        for (int i = start_index; i < end_index; i++) //loop to assign 3 channels to each pixel
+        {
+            leds[i] = CRGB(pbuff[channel++], pbuff[channel++], pbuff[channel++]);
+        }
+  
+        
     }
-  
-  //adjust_gamma();
-  
-  FastLED.show(); //send data to pixels
+    
+    FastLED.show(); //send data to pixels
+}
+
+void LedsManager::checkFps()
+{
+    EVERY_N_MILLISECONDS(FPS_CHECK_TIME_MS) 
+    {
+      Serial.print("LedsManager::fsp-> ");
+      Serial.println(LEDS.getFPS());                       
+   }
 }
 
 void LedsManager::setAllColor(CRGB color) 

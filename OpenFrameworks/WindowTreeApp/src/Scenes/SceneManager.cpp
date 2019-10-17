@@ -74,35 +74,35 @@ void SceneManager::createScenes()
     m_sceneOffset++;
     
     
-//    //Create shader Scene
-//    auto shaderScene = ofPtr<ShaderScene> (new ShaderScene("NoiseShader"));
-//    shaderScene->setup();
-//    m_mySceneManager->addScene(shaderScene);
-//    m_sceneOffset++;
-//
-//    //Create shader Scene
-//    shaderScene = ofPtr<ShaderScene> (new ShaderScene("CirclesShader"));
-//    shaderScene->setup();
-//    m_mySceneManager->addScene(shaderScene);
-//    m_sceneOffset++;
-//
-//    //Create shader Scene
-//    shaderScene = ofPtr<ShaderScene> (new ShaderScene("SparklesShader"));
-//    shaderScene->setup();
-//    m_mySceneManager->addScene(shaderScene);
-//    m_sceneOffset++;
-//
-//    //Create shader Scene
-//    shaderScene = ofPtr<ShaderScene> (new ShaderScene("BreathShader"));
-//    shaderScene->setup();
-//    m_mySceneManager->addScene(shaderScene);
-//    m_sceneOffset++;
-//
-//    //Create shader Scene
-//    shaderScene = ofPtr<ShaderScene> (new ShaderScene("CloudsShader"));
-//    shaderScene->setup();
-//    m_mySceneManager->addScene(shaderScene);
-//    m_sceneOffset++;
+    //Create shader Scene
+    auto shaderScene = ofPtr<ShaderScene> (new ShaderScene("NoiseShader"));
+    shaderScene->setup();
+    m_mySceneManager->addScene(shaderScene);
+    m_sceneOffset++;
+
+    //Create shader Scene
+    shaderScene = ofPtr<ShaderScene> (new ShaderScene("CirclesShader"));
+    shaderScene->setup();
+    m_mySceneManager->addScene(shaderScene);
+    m_sceneOffset++;
+
+    //Create shader Scene
+    shaderScene = ofPtr<ShaderScene> (new ShaderScene("SparklesShader"));
+    shaderScene->setup();
+    m_mySceneManager->addScene(shaderScene);
+    m_sceneOffset++;
+
+    //Create shader Scene
+    shaderScene = ofPtr<ShaderScene> (new ShaderScene("BreathShader"));
+    shaderScene->setup();
+    m_mySceneManager->addScene(shaderScene);
+    m_sceneOffset++;
+
+    //Create shader Scene
+    shaderScene = ofPtr<ShaderScene> (new ShaderScene("CloudsShader"));
+    shaderScene->setup();
+    m_mySceneManager->addScene(shaderScene);
+    m_sceneOffset++;
 
 
     

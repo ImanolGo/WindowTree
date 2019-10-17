@@ -100,6 +100,8 @@ private:
 
     void setupProcessingGroup();
     
+    void setupCommunicationsGui();
+    
     void updateSize(const ofxImGui::Settings& settings);
     
     ofColor colorTemperatureToRGB(float kelvin);
@@ -132,6 +134,7 @@ private:
     ofParameter<float>      m_ledsSize;
     ofParameter<bool>       m_ledsGrid;
     
+    ofParameter<int>        m_maxDataPacketSize;
     
     ofParameter<ofFloatColor>  m_solidColor;
     ofParameter<int>         m_colorTemperature;

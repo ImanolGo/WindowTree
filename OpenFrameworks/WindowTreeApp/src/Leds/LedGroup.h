@@ -43,7 +43,7 @@ class LedGroup{
     
         const vector <ofFloatColor>& getColors() const {return m_colors;}
     
-        unsigned char getChannel() const {return m_channel;}
+        unsigned short getChannel() const {return m_channel;}
     
     protected:
     
@@ -101,7 +101,7 @@ class LedGroup{
         vector <ofFloatColor> m_colorsBlack;
     
         string  m_name;
-        unsigned char    m_channel;
+        unsigned short    m_channel;
 
 };
 

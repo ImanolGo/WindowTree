@@ -17,10 +17,10 @@
 * 74AHCT125 - Quad Level-Shifter (3V to 5V) 
 * 
 
- created 08 January 2018
+ created 17 October 2019
  Based on Claude Heintz "sACN2Ws2811.ino"
  This code is under A Creative Commons Attribution/Share-Alike License http://creativecommons.org/licenses/by-sa/4.0/
-   (2018) by Imanol Gómez
+   (2019) by Imanol Gómez
 
  */
  

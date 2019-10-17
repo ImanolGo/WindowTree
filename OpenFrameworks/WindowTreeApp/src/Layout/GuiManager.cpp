@@ -47,6 +47,7 @@ void GuiManager::setup()
     this->setupVideoGui();
     this->setupProcessingGroup();
     this->setupShadersGui();
+    this->setupCommunicationsGui();
     this->loadGuiValues();
     
     //this->drawGui();
@@ -242,6 +243,19 @@ void GuiManager::setupLedsGui()
 }
 
 
+void GuiManager::setupCommunicationsGui()
+{
+    auto udpManager = &AppManager::getInstance().getUdpManager();
+    
+    m_communicationsGroup.setName("Communications");
+    
+    m_maxDataPacketSize.set("MaxDataSize", 300, 100, 1500);
+    m_maxDataPacketSize.addListener(udpManager, &UdpManager::setMaxDataPacketSize);
+    m_communicationsGroup.add(m_maxDataPacketSize);
+    m_parameters.add(m_maxDataPacketSize);
+    
+}
+
 
 void GuiManager::update()
 {
@@ -302,6 +316,12 @@ void GuiManager::drawGui()
                 
                 ofxImGui::EndTree(mainSettings);
                 
+            }
+            
+            if (ofxImGui::BeginTree(m_communicationsGroup, mainSettings))
+            {
+                ofxImGui::AddParameter(m_maxDataPacketSize);
+                ofxImGui::EndTree(mainSettings);
             }
             
             

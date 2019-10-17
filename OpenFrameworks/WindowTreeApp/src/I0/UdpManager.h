@@ -27,15 +27,17 @@ class UdpManager: public Manager
 {
 
     static const int UDP_MESSAGE_LENGHT; ///Defines the Udp"s message length
+    static const int UDP_MTU_ETHERNET; ///Defines the Ethernet's maximum transmission unit
+    static const int DATA_HEADER_OVERHEAD; ///Defines the data's header overhead
     
     struct udp_header {
         unsigned char f1;
         unsigned char f2;
         unsigned char f3;
-        short size;
-        unsigned char command;
-        unsigned char  channel;
+        unsigned short payload_size;
+        unsigned short command;
     };
+    
 public:
     //! Constructor
     UdpManager();
@@ -50,8 +52,9 @@ public:
     void update();
     
     void timerCompleteHandler( int &args ) ;
-
-
+    
+    void setMaxDataPacketSize(int& value );
+    
 private:
     
     void setupUdpConnection();
@@ -82,14 +85,24 @@ private:
     
     void updatePixels();
     
+    string getDataHeader(unsigned int num_pixels);
+    
+    string getDataPayload(unsigned short channel, unsigned short offset, unsigned short num_pixels, const vector<ofFloatColor>& pixels);
+    
+    void printHex(const string& message);
+    
 private:
     
     ofxUDPManager m_udpConnection;
     udp_header    m_dataHeader;
     udp_header    m_connectHeader;
+    udp_header    m_autodiscoveryHeader;
     ofxSimpleTimer         m_timer;
     string                 m_broadcast;
     string                 m_ip;
     bool                   m_connected;
+    
+    unsigned short  m_maxNumPixelsPerPacket;
+    unsigned short  m_maxDataPacketSize;
 };
 
