@@ -27,6 +27,7 @@ class LedsManager{
 
     void parseRGBReceived(unsigned char* pbuff, int packetSize);
     void setAllColor(CRGB color);
+    void show();
     
   private:
 
@@ -81,6 +82,10 @@ void LedsManager::parseRGBReceived(unsigned char* pbuff, int packetSize)
      unsigned short offset = ByteToShort(pbuff[index++], pbuff[index++]);
      unsigned short num_pixels = ByteToShort(pbuff[index++], pbuff[index++]);
 
+     if(channel!=CHANNEL){
+        return;
+     }
+
 //     Serial.print("LedsManager::parseRGBReceived -> channel: ");
 //     Serial.println(channel);
 //
@@ -112,6 +117,11 @@ void LedsManager::parseRGBReceived(unsigned char* pbuff, int packetSize)
         
     }
     
+    //FastLED.show(); //send data to pixels
+}
+
+void LedsManager::show()
+{
     FastLED.show(); //send data to pixels
 }
 

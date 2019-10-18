@@ -202,6 +202,10 @@ void WifiManager::parseUdp()
               Serial.print("WifiManager::parseUdp-> Send Autodiscovery ");
                is_connected = false;
             }
+
+            else if(command == COMMAND_TIME){
+               this->ledsManager->show();
+            }
            
            
               

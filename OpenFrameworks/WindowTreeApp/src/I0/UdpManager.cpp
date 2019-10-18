@@ -15,7 +15,7 @@ const int UdpManager::UDP_MESSAGE_LENGHT = 100;
 const int UdpManager::UDP_MTU_ETHERNET = 1450;
 const int UdpManager::DATA_HEADER_OVERHEAD = 7;
 
-UdpManager::UdpManager(): Manager(), m_connected(false), m_maxNumPixelsPerPacket(100)
+UdpManager::UdpManager(): Manager(), m_connected(false), m_maxNumPixelsPerPacket(100),  m_frameNumber(1), m_refreshPixels(false), m_refreshTime(true)
 {
     //Intentionally left empty
 }
@@ -65,8 +65,11 @@ void UdpManager::setupHeaders()
     m_autodiscoveryHeader.payload_size = 1;
     m_autodiscoveryHeader.command = 'a';
     
-    
-
+    m_timeHeader.f1 = 0x10;
+    m_timeHeader.f2 = 0x41;
+    m_timeHeader.f3 = 0x37;
+    m_timeHeader.payload_size = 4;
+    m_timeHeader.command = 't';
     
     m_maxDataPacketSize = UDP_MTU_ETHERNET;
     m_maxNumPixelsPerPacket = (m_maxDataPacketSize-DATA_HEADER_OVERHEAD)/3;
@@ -156,7 +159,15 @@ void UdpManager::setupIP()
 void UdpManager::update()
 {
     this->updateReveivePackage();
-    this->updatePixels();
+    
+    if(m_refreshPixels){
+        this->updatePixels();
+        
+    }
+    else if(m_refreshTime){
+        this->updateTime();
+    }
+    
     m_timer.update();
     
 }
@@ -177,26 +188,40 @@ void UdpManager::updatePixels()
         unsigned short remainder = pixels.size()%m_maxNumPixelsPerPacket;
         unsigned short offset = 0;
         
-        for(int i=0; i<1; i++){
-            
-            string message = this->getDataHeader(m_maxNumPixelsPerPacket);
-            message+=this->getDataPayload(group.second->getChannel(), offset,m_maxNumPixelsPerPacket,pixels);
-            m_udpConnection.Send(message.c_str(),message.length());
-            offset+=m_maxNumPixelsPerPacket;
-            //this->printHex(message);
-            
-            m_udpConnection.Send(message.c_str(),message.length());
-        }
         
+        
+        
+        string message = this->getDataHeader(m_maxNumPixelsPerPacket);
+        message+=this->getDataPayload(group.second->getChannel(), offset,m_maxNumPixelsPerPacket,pixels);
+        m_udpConnection.Send(message.c_str(),message.length());
+        offset+=m_maxNumPixelsPerPacket;
+        //this->printHex(message);
+        
+        m_udpConnection.Send(message.c_str(),message.length());
+        
+//        for(int i=0; i<division; i++){
+//
+//            string message = this->getDataHeader(m_maxNumPixelsPerPacket);
+//            message+=this->getDataPayload(group.second->getChannel()+offset, offset,m_maxNumPixelsPerPacket,pixels);
+//            m_udpConnection.Send(message.c_str(),message.length());
+//            offset+=m_maxNumPixelsPerPacket;
+//            //this->printHex(message);
+//
+//            m_udpConnection.Send(message.c_str(),message.length());
+//        }
+//
 //        if(remainder!=0)
 //        {
 //            string message = this->getDataHeader(remainder);
-//            message+=this->getDataPayload(group.second->getChannel(),offset,remainder,pixels);
+//            message+=this->getDataPayload(group.second->getChannel()+offset,offset,remainder,pixels);
 //            m_udpConnection.Send(message.c_str(),message.length());
 //            //this->printHex(message);
 //        }
     }
     
+    
+    m_refreshTime = true;
+    m_refreshPixels = false;
 }
 
 void UdpManager::updateReveivePackage()
@@ -214,6 +239,18 @@ void UdpManager::updateReveivePackage()
     }
 }
 
+void UdpManager::updateTime()
+{
+    //ofLogNotice() <<"UdpManager::updateTime -> " << ofGetElapsedTimeMillis() << "ms";
+    
+    this->sendTime();
+    //m_udpConnection.Send(message.c_str(),message.length());
+    m_frameNumber++;
+    m_refreshTime = false;
+    m_refreshPixels = true;
+}
+
+
 bool UdpManager::isMessage(char * buffer, int size)
 {
     if(buffer[0] != m_connectHeader.f1  && buffer[1] != m_connectHeader.f2  && buffer[2] != m_connectHeader.f3 ){
@@ -226,13 +263,14 @@ bool UdpManager::isMessage(char * buffer, int size)
     return true;
 }
 
-string UdpManager::getDataHeader(unsigned int num_pixels)
+string UdpManager::getDataHeader(unsigned short num_pixels)
 {
-    int ledsPerPixel = 3;
+    unsigned short ledsPerPixel = 3;
+    unsigned short data_header_size = 6;
     
     string message="";
     message+= m_dataHeader.f1; message+= m_dataHeader.f2; message+= m_dataHeader.f3;
-    m_dataHeader.payload_size = ledsPerPixel*num_pixels + 6;
+    m_dataHeader.payload_size = ledsPerPixel*num_pixels + data_header_size;
     unsigned char * s = (unsigned char*)& m_dataHeader.payload_size;
     message+= s[1] ;  message+=  s[0];
     s = (unsigned char*)& m_dataHeader.command;
@@ -304,6 +342,22 @@ void UdpManager::sendConnected()
     m_udpConnection.Send(message.c_str(),message.length());
     
     ofLogNotice() <<"UdpManager::sendConnected -> Send Connected ";
+}
+
+void UdpManager::sendTime()
+{
+    string message="";
+    message+= m_timeHeader.f1; message+= m_timeHeader.f2; message+= m_timeHeader.f3;
+    unsigned char * s = (unsigned char*)& m_timeHeader.payload_size;
+    message+= s[1] ;  message+=  s[0];
+    s = (unsigned char*)& m_timeHeader.command;
+    message+= s[1] ;  message+=  s[0];
+    s = (unsigned char*)& m_frameNumber;
+    message+= s[3];  message+=  s[2];message+= s[1] ;  message+=  s[0];
+    
+    m_udpConnection.Send(message.c_str(),message.length());
+    
+    //ofLogNotice() <<"UdpManager::sendConnected -> Send Time ";
 }
 
 void UdpManager::sendAutodiscovery()

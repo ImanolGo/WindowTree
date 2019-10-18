@@ -14,6 +14,7 @@
 #define COMMAND_DATA 100
 #define COMMAND_AUTODISCOVERY 97
 #define COMMAND_CONNECT 99
+#define COMMAND_TIME 116
 
 
 /*************************************************************************

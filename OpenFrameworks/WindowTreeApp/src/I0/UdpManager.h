@@ -67,6 +67,8 @@ private:
     
     void updateReveivePackage();
     
+    void updateTime();
+    
     bool isMessage(char * buffer, int size);
     
     void parseMessage(char * buffer, int size);
@@ -83,9 +85,11 @@ private:
     
     void sendDiscovered();
     
+    void sendTime();
+    
     void updatePixels();
     
-    string getDataHeader(unsigned int num_pixels);
+    string getDataHeader(unsigned short num_pixels);
     
     string getDataPayload(unsigned short channel, unsigned short offset, unsigned short num_pixels, const vector<ofFloatColor>& pixels);
     
@@ -97,10 +101,15 @@ private:
     udp_header    m_dataHeader;
     udp_header    m_connectHeader;
     udp_header    m_autodiscoveryHeader;
+    udp_header    m_timeHeader;
     ofxSimpleTimer         m_timer;
     string                 m_broadcast;
     string                 m_ip;
     bool                   m_connected;
+    unsigned int            m_frameNumber;
+    bool            m_refreshTime;
+    bool            m_refreshPixels;
+    double          m_elapsedTime;
     
     unsigned short  m_maxNumPixelsPerPacket;
     unsigned short  m_maxDataPacketSize;
