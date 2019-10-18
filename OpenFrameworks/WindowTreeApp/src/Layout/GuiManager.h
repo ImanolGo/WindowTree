@@ -77,10 +77,14 @@ public:
     float getColorAmount() const{return m_colorAmount.get();}
  
     int getShaderDirection() const {return m_shaderDirection.get();}
+    
+    const ofParameter<int>& getColorTemperature() const { return m_colorTemperature;}
 
     void setSceneTransitionTime(float value) {m_sceneTransitionTime = value;}
     
     void setColorTemperature(int & value);
+    
+    void setUseWWAleds(bool & value);
     
 private:
     
@@ -105,6 +109,8 @@ private:
     void updateSize(const ofxImGui::Settings& settings);
     
     ofColor colorTemperatureToRGB(float kelvin);
+    
+    ofColor colorTemperatureToWWA(float kelvin);
     
 private:
     
@@ -139,6 +145,7 @@ private:
     ofParameter<ofFloatColor>  m_solidColor;
     ofParameter<int>         m_colorTemperature;
     ofParameter<bool>        m_useHueCorrection;
+    ofParameter<bool>        m_useWWAleds;
     
     std::vector<std::string>    m_sceneNames;
     

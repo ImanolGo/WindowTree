@@ -106,6 +106,10 @@ void GuiManager::setupScenesGui()
     m_useHueCorrection.addListener(scenesManager, &SceneManager::setUseHueCorrection);
     m_parameters.add(m_useHueCorrection);
     
+    m_useWWAleds.set("WWA Leds", true);
+    m_useWWAleds.addListener(this, &GuiManager::setUseWWAleds);
+    m_parameters.add(m_useWWAleds);
+ 
     m_sceneTransitionTime.set("TransitionTime", 0.5, 0.0, 10);
     m_sceneTransitionTime.addListener(scenesManager, &SceneManager::onTransitionTimeChange);
     m_parameters.add(m_sceneTransitionTime);
@@ -296,6 +300,7 @@ void GuiManager::drawGui()
                 ofxImGui::AddParameter(m_solidColor);
                 ofxImGui::AddParameter(m_colorTemperature);
                 ofxImGui::AddParameter(m_useHueCorrection);
+                ofxImGui::AddParameter(m_useWWAleds);          
                 ofxImGui::AddCombo(m_sceneMode, m_sceneNames);
                 ofxImGui::EndTree(mainSettings);
             }
@@ -433,8 +438,47 @@ void GuiManager::drawRectangle()
 }
 void GuiManager::setColorTemperature(int & value)
 {
-    m_solidColor = this->colorTemperatureToRGB(value);
+    if(m_useWWAleds){
+        m_solidColor = this->colorTemperatureToWWA(m_colorTemperature);
+    }
+    else{
+        m_solidColor = this->colorTemperatureToRGB(m_colorTemperature);
+    }
+}
+
+void GuiManager::setUseWWAleds(bool & value)
+{
+    if(value){
+        m_solidColor = this->colorTemperatureToWWA(m_colorTemperature);
+    }
+    else{
+        m_solidColor = this->colorTemperatureToRGB(m_colorTemperature);
+    }
     
+}
+
+
+ofColor GuiManager::colorTemperatureToWWA(float kelvin)
+{
+    float amber = 2000;
+    float warm_white = 3000;
+    float cold_white = 6000;
+    
+    float value = ofClamp(kelvin, amber, cold_white);
+    ofColor color = ofColor(0);
+    
+    if(value <= warm_white){
+        int amount = (int)ofMap(value, amber, warm_white, 0, 255);
+        color.r = 255 - amount;
+        color.b = amount;
+    }
+    else{
+        int amount = (int)ofMap(value, warm_white, cold_white, 0, 255);
+        color.b = 255 - amount;
+        color.g = amount;
+    }
+    
+    return color;
 }
 
 ofColor GuiManager::colorTemperatureToRGB(float kelvin)
