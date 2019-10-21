@@ -18,6 +18,7 @@ VideoScene::~VideoScene()
 {
     m_videoPlayer.stop();
     m_videoPlayer.close();
+    ofSleepMillis(200);
    // m_videoPlayer.closeMovie();
 }
 
